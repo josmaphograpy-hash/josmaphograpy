@@ -790,13 +790,16 @@ def admin_review_delete(review_id: int):
 
 
 def ensure_schema() -> None:
-    """Crea tablas nuevas y columnas faltantes en SQLite."""
+    """Crea tablas y columnas faltantes (SQLite local y MySQL/TiDB en producción)."""
     db.create_all()
-    with db.engine.begin() as conn:
-        cols = {
-            row[1] for row in conn.execute(db.text("PRAGMA table_info(site_settings)"))
-        }
-        if "currency" not in cols:
+    from sqlalchemy import inspect as sa_inspect
+
+    inspector = sa_inspect(db.engine)
+    if "site_settings" not in inspector.get_table_names():
+        return
+    cols = {c["name"] for c in inspector.get_columns("site_settings")}
+    if "currency" not in cols:
+        with db.engine.begin() as conn:
             conn.execute(
                 db.text(
                     "ALTER TABLE site_settings ADD COLUMN currency VARCHAR(10) DEFAULT 'COP'"
