@@ -25,29 +25,39 @@
     }
   });
 
-  // Scroll reveal
-  const reveals = document.querySelectorAll(".reveal");
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-    );
-    reveals.forEach((el) => io.observe(el));
-  } else {
-    reveals.forEach((el) => el.classList.add("is-visible"));
+  // Scroll reveal (también para nodos inyectados por app.js)
+  let revealIo = null;
+  function observeReveals() {
+    const nodes = document.querySelectorAll(".reveal:not(.is-visible)");
+    if (!nodes.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      nodes.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    if (!revealIo) {
+      revealIo = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              revealIo.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      );
+    }
+    nodes.forEach((el) => revealIo.observe(el));
   }
 
-  // Lightbox
-  const items = Array.from(document.querySelectorAll("[data-lightbox]"));
+  observeReveals();
+  document.addEventListener("content:ready", observeReveals);
+
+  // Lightbox (delegación: funciona tras cargar fotos desde la API)
   const lightbox = document.getElementById("lightbox");
-  if (!lightbox || !items.length) return;
+  if (!lightbox) return;
 
   const imgEl = document.getElementById("lightbox-img");
   const titleEl = document.getElementById("lightbox-title");
@@ -57,10 +67,16 @@
   const btnNext = document.getElementById("lightbox-next");
   let index = 0;
 
+  function items() {
+    return Array.from(document.querySelectorAll("[data-lightbox]"));
+  }
+
   function openAt(i) {
-    index = (i + items.length) % items.length;
-    const el = items[index];
-    imgEl.src = el.dataset.full || el.querySelector("img").src;
+    const list = items();
+    if (!list.length) return;
+    index = (i + list.length) % list.length;
+    const el = list[index];
+    imgEl.src = el.dataset.full || el.querySelector("img")?.src || "";
     imgEl.alt = el.dataset.title || "";
     titleEl.textContent = el.dataset.title || "";
     metaEl.textContent = [el.dataset.category, el.dataset.location]
@@ -75,14 +91,18 @@
     document.body.style.overflow = "";
   }
 
-  items.forEach((el, i) => {
-    el.addEventListener("click", () => openAt(i));
-    el.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openAt(i);
-      }
-    });
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-lightbox]");
+    if (!el) return;
+    openAt(items().indexOf(el));
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const el = e.target.closest?.("[data-lightbox]");
+    if (el && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      openAt(items().indexOf(el));
+    }
   });
 
   btnClose?.addEventListener("click", closeLb);
