@@ -4,18 +4,17 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .env
-.venv/
+*.db
 josman.db
+*.db
 
-# Uploads (se regeneran desde el panel)
+# Uploads locales
 static/uploads/*
 !static/uploads/.gitkeep
 
-# Logs
+# Logs / editor
 logs
 *.log
-
-# Editor
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -24,3 +23,4 @@ logs
 # Temp
 ref-source.html
 download_html.py
+_*.py

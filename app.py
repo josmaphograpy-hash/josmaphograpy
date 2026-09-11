@@ -1,9 +1,8 @@
-"""Sitio público + panel del fotógrafo (Josman Sanchez)."""
+"""Backend Josman: API (Vercel front) + panel admin (Render)."""
 
 from __future__ import annotations
 
 import os
-import secrets
 import uuid
 from functools import wraps
 from pathlib import Path
@@ -17,6 +16,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_cors import CORS
 from flask_login import (
     LoginManager,
     current_user,
@@ -24,8 +24,10 @@ from flask_login import (
     login_user,
     logout_user,
 )
-from werkzeug.utils import secure_filename
 
+from api import api_bp
+from cloudinary_service import public_image_url, save_upload
+from config import Config
 from models import (
     Admin,
     Package,
@@ -39,15 +41,18 @@ from models import (
 
 BASE_DIR = Path(__file__).resolve().parent
 UPLOAD_DIR = BASE_DIR / "static" / "uploads"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(24))
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR / 'josman.db'}"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
+app.config.from_object(Config)
 
 db.init_app(app)
+CORS(
+    app,
+    resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS", "*")}},
+    supports_credentials=False,
+)
+app.register_blueprint(api_bp)
+
 login_manager = LoginManager(app)
 login_manager.login_view = "admin_login"
 login_manager.login_message = "Inicia sesión para acceder al panel."
@@ -67,22 +72,6 @@ def admin_required(view):
         return view(*args, **kwargs)
 
     return wrapped
-
-
-def allowed_file(filename: str) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def save_upload(file_storage) -> str | None:
-    if not file_storage or not file_storage.filename:
-        return None
-    if not allowed_file(file_storage.filename):
-        return None
-    original = secure_filename(file_storage.filename)
-    ext = original.rsplit(".", 1)[1].lower()
-    name = f"{uuid.uuid4().hex}.{ext}"
-    file_storage.save(UPLOAD_DIR / name)
-    return f"uploads/{name}"
 
 
 def get_settings() -> SiteSettings:
@@ -302,9 +291,7 @@ def seed_database() -> None:
 
 
 def photo_src(path: str) -> str:
-    if path.startswith("http://") or path.startswith("https://"):
-        return path
-    return url_for("static", filename=path)
+    return public_image_url(path)
 
 
 app.jinja_env.globals["photo_src"] = photo_src
@@ -823,4 +810,5 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1", host="0.0.0.0", port=port)

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Josman Sanchez | Fotografía Fine Art</title>
+  <meta name="description" content="Fotografía de bodas fine art en Barranquilla, Cartagena y destinos.">
+  <meta name="theme-color" content="#1C1815">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FDFBF7', sand: '#F7F3EC', card: '#F4EFE6', border: '#E5DCCE',
+              gold: '#C59B74', goldlight: '#E2C29F', bronze: '#A87C51',
+              dark: '#1C1815', muted: '#736B65'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/editorial.css">
+</head>
+<body class="bg-brand-cream text-brand-dark font-sans antialiased overflow-x-hidden">
+  <div id="page-loader" class="page-loader"><div class="page-loader__mark">JS</div></div>
+  <div class="film-grain" aria-hidden="true"></div>
+
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-40 is-top">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
+      <a href="#inicio" class="flex items-center gap-3 group">
+        <span class="nav-mono w-10 h-10 rounded-full border border-brand-gold/40 flex items-center justify-center font-serif italic text-brand-gold">JS</span>
+        <div>
+          <div class="nav-brand-name font-serif text-xl tracking-wider uppercase font-semibold" data-brand>Josman Sanchez</div>
+          <div class="nav-tagline text-[9px] tracking-[0.25em] uppercase text-brand-muted" data-tagline>Fine Art Wedding Photographer</div>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-xs tracking-widest uppercase">
+        <a class="nav-link hover:text-brand-gold" href="#filosofia">Filosofía</a>
+        <a class="nav-link hover:text-brand-gold" href="#galeria">Galería</a>
+        <a class="nav-link hover:text-brand-gold" href="#colecciones">Colecciones</a>
+        <a class="nav-link hover:text-brand-gold" href="#cotizador">Cotizar</a>
+        <a class="nav-link hover:text-brand-gold" href="#opiniones">Opinar</a>
+      </nav>
+      <a href="#cotizador" class="hidden md:inline-flex gold-gradient-bg text-white px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase">Cotizar Fecha</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-cinematic" id="inicio">
+      <div class="hero-cinematic__media"><img data-hero-image src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000&auto=format&fit=crop" alt=""></div>
+      <div class="hero-cinematic__veil"></div>
+      <div class="hero-cinematic__content">
+        <p class="text-[10px] tracking-[0.35em] uppercase text-brand-goldlight mb-4"><span data-tagline></span> · <span data-location></span></p>
+        <h1 class="hero-cinematic__brand" data-brand>Josman Sanchez</h1>
+        <p class="hero-cinematic__title" data-hero-title></p>
+        <p class="hero-cinematic__lead" data-hero-subtitle></p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#cotizador" class="gold-gradient-bg text-white px-8 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase">Diseñar Tu Cobertura</a>
+          <a href="#galeria" class="border border-white/35 text-white px-8 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase hover:bg-white hover:text-brand-dark transition">Ver Galería</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="filosofia" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
+      <div class="max-w-3xl reveal">
+        <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">La Filosofía</span>
+        <h2 class="font-serif text-4xl sm:text-5xl mt-3 mb-6" data-about-title></h2>
+        <p class="text-brand-muted font-light leading-relaxed whitespace-pre-line" data-about-text></p>
+      </div>
+    </section>
+
+    <section id="galeria" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">Galería</span>
+        <h2 class="font-serif text-4xl sm:text-5xl mt-3">Instantes de Luz</h2>
+      </div>
+      <div class="gallery-masonry" data-gallery></div>
+    </section>
+
+    <section id="colecciones" class="py-24 bg-brand-sand border-y border-brand-border/60">
+      <div class="max-w-7xl mx-auto px-6 lg:px-12">
+        <div class="text-center mb-16 reveal">
+          <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">Inversión</span>
+          <h2 class="font-serif text-4xl sm:text-5xl mt-3">Colecciones</h2>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" data-packages></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16" data-addons></div>
+      </div>
+    </section>
+
+    <section id="cotizador" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
+      <div class="text-center mb-12 reveal">
+        <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">Cotizador</span>
+        <h2 class="font-serif text-4xl mt-3">Arma tu propuesta</h2>
+      </div>
+      <div class="grid lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-7 space-y-4 bg-brand-cream border border-brand-border rounded-2xl p-6 sm:p-10">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <input id="input-names" class="bg-brand-sand border border-brand-border rounded-xl px-4 py-3 text-xs" placeholder="Nombres de la pareja *">
+            <input id="input-phone" class="bg-brand-sand border border-brand-border rounded-xl px-4 py-3 text-xs" placeholder="WhatsApp *">
+            <input id="input-date" type="date" class="bg-brand-sand border border-brand-border rounded-xl px-4 py-3 text-xs">
+            <input id="input-location" class="bg-brand-sand border border-brand-border rounded-xl px-4 py-3 text-xs" placeholder="Ciudad / lugar *">
+          </div>
+          <div class="space-y-3" data-quote-packages></div>
+          <div class="grid sm:grid-cols-2 gap-3" data-quote-addons></div>
+        </div>
+        <div class="lg:col-span-5">
+          <div class="bg-brand-dark text-white rounded-2xl p-8 sticky top-28">
+            <h3 class="font-serif text-2xl mb-6">Inversión estimada</h3>
+            <div class="space-y-2 text-xs mb-6" data-quote-breakdown></div>
+            <p class="font-serif text-3xl mb-6" data-quote-total>$ 0</p>
+            <button type="button" data-send-quote class="w-full py-4 rounded-full bg-[#25D366] text-xs font-bold uppercase tracking-wider">Enviar por WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="opiniones" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
+      <div class="text-center mb-10 reveal">
+        <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">Historias</span>
+        <h2 class="font-serif text-4xl mt-3 mb-3">Opiniones</h2>
+        <p data-rating-meta class="text-sm text-brand-muted"></p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 mb-16" data-reviews></div>
+
+      <form id="review-form" class="max-w-2xl mx-auto bg-brand-sand border border-brand-border rounded-2xl p-8 space-y-4">
+        <h3 class="font-serif text-2xl text-center">Deja tu comentario</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <input name="author_name" required class="bg-brand-cream border border-brand-border rounded-xl px-4 py-3 text-sm" placeholder="Tu nombre *">
+          <input name="author_email" type="email" class="bg-brand-cream border border-brand-border rounded-xl px-4 py-3 text-sm" placeholder="Email">
+        </div>
+        <input name="event_info" class="w-full bg-brand-cream border border-brand-border rounded-xl px-4 py-3 text-sm" placeholder="Evento / lugar">
+        <select name="rating" class="w-full bg-brand-cream border border-brand-border rounded-xl px-4 py-3 text-sm">
+          <option value="5">5 estrellas</option>
+          <option value="4">4 estrellas</option>
+          <option value="3">3 estrellas</option>
+          <option value="2">2 estrellas</option>
+          <option value="1">1 estrella</option>
+        </select>
+        <textarea name="comment" required rows="4" class="w-full bg-brand-cream border border-brand-border rounded-xl px-4 py-3 text-sm" placeholder="Tu experiencia *"></textarea>
+        <button class="w-full gold-gradient-bg text-white rounded-full py-3 text-xs font-bold uppercase tracking-wider">Enviar opinión</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="bg-brand-dark text-white py-16 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <div class="font-serif text-2xl uppercase" data-brand></div>
+        <p class="text-xs text-stone-400 mt-1" data-location></p>
+      </div>
+      <div class="flex gap-6 text-brand-gold text-lg" data-socials></div>
+      <a data-whatsapp-link href="#" class="text-xs uppercase tracking-wider text-brand-goldlight">WhatsApp</a>
+    </div>
+  </footer>
+
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
+    <button type="button" id="lightbox-close" class="lightbox__close" aria-label="Cerrar">&times;</button>
+    <button type="button" id="lightbox-prev" class="lightbox__btn lightbox__prev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="lightbox__img-wrap">
+      <img id="lightbox-img" src="" alt="">
+      <div class="lightbox__caption"><div id="lightbox-title"></div><small id="lightbox-meta"></small></div>
+    </div>
+    <button type="button" id="lightbox-next" class="lightbox__btn lightbox__next" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/editorial.js"></script>
+</body>
+</html>
