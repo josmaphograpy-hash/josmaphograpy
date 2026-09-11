@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}Servicios{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="font-serif text-4xl">Servicios adicionales</h1>
+    <p class="text-sm text-brand-muted mt-1">Complementos que el cliente puede sumar al cotizador.</p>
+  </div>
+  <a href="{{ url_for('admin_service_new') }}" class="rounded-full bg-brand-gold text-white px-6 py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">+ Nuevo servicio</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {% for service in services %}
+  <article class="bg-brand-cream border border-brand-border rounded-2xl p-5">
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-brand-sand border border-brand-border flex items-center justify-center text-brand-gold">
+          <i class="{{ service.icon }}"></i>
+        </div>
+        <div>
+          <h2 class="font-serif text-xl">{{ service.name }}</h2>
+          <p class="text-xs text-brand-muted mt-1">{{ service.description }}</p>
+          <p class="font-serif text-lg mt-2">$ {{ "{:,.0f}".format(service.price).replace(",", ".") }}</p>
+          <span class="text-[10px] uppercase px-2 py-0.5 rounded-full {% if service.is_active %}bg-green-100 text-green-800{% else %}bg-stone-200 text-stone-600{% endif %}">
+            {% if service.is_active %}Activo{% else %}Oculto{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <a href="{{ url_for('admin_service_edit', service_id=service.id) }}" class="rounded-full border border-brand-border px-4 py-2 text-xs font-semibold uppercase hover:border-brand-gold">Editar</a>
+      <form method="post" action="{{ url_for('admin_service_delete', service_id=service.id) }}" onsubmit="return confirm('¿Eliminar este servicio?')">
+        <button class="rounded-full border border-red-200 text-red-700 px-4 py-2 text-xs font-semibold uppercase">Borrar</button>
+      </form>
+    </div>
+  </article>
+  {% else %}
+  <p class="text-brand-muted">No hay servicios adicionales.</p>
+  {% endfor %}
+</div>
+{% endblock %}

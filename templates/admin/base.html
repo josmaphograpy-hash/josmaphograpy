@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Panel{% endblock %} | Josman Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FDFBF7', sand: '#F7F3EC', card: '#F4EFE6', border: '#E5DCCE',
+              gold: '#C59B74', bronze: '#A87C51', dark: '#1C1815', muted: '#736B65'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-sand text-brand-dark font-sans antialiased min-h-screen">
+  {% if current_user.is_authenticated %}
+  <header class="bg-brand-dark text-white">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="{{ url_for('admin_dashboard') }}" class="font-serif text-xl tracking-wide">JS Admin</a>
+      <nav class="flex flex-wrap items-center gap-4 text-xs uppercase tracking-wider">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-brand-gold">Inicio</a>
+        <a href="{{ url_for('admin_photos') }}" class="hover:text-brand-gold">Fotos</a>
+        <a href="{{ url_for('admin_packages') }}" class="hover:text-brand-gold">Planes</a>
+        <a href="{{ url_for('admin_services') }}" class="hover:text-brand-gold">Servicios</a>
+        <a href="{{ url_for('admin_settings') }}" class="hover:text-brand-gold">Información</a>
+        <a href="{{ url_for('admin_social') }}" class="hover:text-brand-gold">Redes</a>
+        <a href="{{ url_for('admin_reviews') }}" class="hover:text-brand-gold">Comentarios</a>
+        <a href="{{ url_for('index') }}" target="_blank" class="hover:text-brand-gold">Ver sitio</a>
+        <a href="{{ url_for('admin_logout') }}" class="text-red-300 hover:text-white">Salir</a>
+      </nav>
+    </div>
+  </header>
+  {% endif %}
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2 mb-6">
+          {% for category, message in messages %}
+            <div class="rounded-xl px-4 py-3 text-sm {% if category == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

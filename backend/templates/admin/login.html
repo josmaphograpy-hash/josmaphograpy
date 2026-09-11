@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% block title %}Ingresar{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto mt-16 bg-brand-cream border border-brand-border rounded-2xl p-8 shadow-sm">
+  <h1 class="font-serif text-3xl mb-2 text-center">Panel del Fotógrafo</h1>
+  <p class="text-sm text-brand-muted text-center mb-8">Acceso privado para gestionar el sitio</p>
+  <form method="post" class="space-y-4">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Usuario</label>
+      <input type="text" name="username" required class="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-brand-gold" placeholder="josman">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Contraseña</label>
+      <input type="password" name="password" required class="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-brand-gold">
+    </div>
+    <button type="submit" class="w-full rounded-full bg-brand-gold text-white py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze transition">
+      Entrar
+    </button>
+  </form>
+</div>
+{% endblock %}

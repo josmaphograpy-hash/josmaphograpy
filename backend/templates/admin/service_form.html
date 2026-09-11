@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if service %}Editar servicio{% else %}Nuevo servicio{% endif %}{% endblock %}
+{% block content %}
+<h1 class="font-serif text-4xl mb-6">{% if service %}Editar servicio{% else %}Nuevo servicio{% endif %}</h1>
+<form method="post" class="bg-brand-cream border border-brand-border rounded-2xl p-6 space-y-5 max-w-2xl">
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Nombre *</label>
+    <input name="name" required value="{{ service.name if service else '' }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white" placeholder="Sesión Pre-Boda">
+  </div>
+  {% if not service %}
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Clave interna (opcional)</label>
+    <input name="key" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white" placeholder="add_preboda">
+  </div>
+  {% endif %}
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Descripción</label>
+    <textarea name="description" rows="3" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">{{ service.description if service else '' }}</textarea>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Precio</label>
+      <input type="number" step="1000" name="price" value="{{ service.price if service else 0 }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Icono Font Awesome</label>
+      <input name="icon" value="{{ service.icon if service else 'fa-solid fa-star' }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Orden</label>
+      <input type="number" name="sort_order" value="{{ service.sort_order if service else 0 }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+  </div>
+  <label class="flex items-center gap-2 text-sm">
+    <input type="checkbox" name="is_active" value="1" {% if not service or service.is_active %}checked{% endif %}>
+    Visible en el sitio
+  </label>
+  <div class="flex gap-3">
+    <button type="submit" class="rounded-full bg-brand-gold text-white px-8 py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">Guardar</button>
+    <a href="{{ url_for('admin_services') }}" class="rounded-full border border-brand-border px-8 py-3 text-xs font-bold uppercase tracking-wider">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

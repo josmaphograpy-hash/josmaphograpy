@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="font-serif text-4xl mb-2">Hola, {{ settings.brand_name }}</h1>
+<p class="text-brand-muted mb-8">Gestiona fotos, información, redes y comentarios desde aquí.</p>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+  <div class="bg-brand-cream border border-brand-border rounded-2xl p-6">
+    <p class="text-xs uppercase tracking-wider text-brand-muted">Fotos</p>
+    <p class="font-serif text-3xl mt-2">{{ photo_count }}</p>
+    <p class="text-xs text-brand-muted mt-1">{{ published_count }} publicadas</p>
+  </div>
+  <div class="bg-brand-cream border border-brand-border rounded-2xl p-6">
+    <p class="text-xs uppercase tracking-wider text-brand-muted">Por aprobar</p>
+    <p class="font-serif text-3xl mt-2">{{ pending_reviews }}</p>
+    <p class="text-xs text-brand-muted mt-1">comentarios pendientes</p>
+  </div>
+  <div class="bg-brand-cream border border-brand-border rounded-2xl p-6">
+    <p class="text-xs uppercase tracking-wider text-brand-muted">Publicados</p>
+    <p class="font-serif text-3xl mt-2">{{ approved_reviews }}</p>
+    <p class="text-xs text-brand-muted mt-1">testimonios visibles</p>
+  </div>
+  <div class="bg-brand-cream border border-brand-border rounded-2xl p-6">
+    <p class="text-xs uppercase tracking-wider text-brand-muted">Redes</p>
+    <p class="font-serif text-3xl mt-2">{{ social_count }}</p>
+    <p class="text-xs text-brand-muted mt-1">activas en el sitio</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <a href="{{ url_for('admin_packages') }}" class="rounded-2xl border border-brand-border bg-white p-6 hover:border-brand-gold transition">
+    <i class="fa-solid fa-layer-group text-brand-gold text-xl mb-3"></i>
+    <h2 class="font-serif text-xl">Planes / Colecciones</h2>
+    <p class="text-sm text-brand-muted mt-1">{{ package_count }} activos · precios e inclusiones.</p>
+  </a>
+  <a href="{{ url_for('admin_services') }}" class="rounded-2xl border border-brand-border bg-white p-6 hover:border-brand-gold transition">
+    <i class="fa-solid fa-plus text-brand-gold text-xl mb-3"></i>
+    <h2 class="font-serif text-xl">Servicios adicionales</h2>
+    <p class="text-sm text-brand-muted mt-1">{{ addon_count }} activos · complementos del cotizador.</p>
+  </a>
+  <a href="{{ url_for('admin_photo_new') }}" class="rounded-2xl border border-brand-border bg-white p-6 hover:border-brand-gold transition">
+    <i class="fa-solid fa-cloud-arrow-up text-brand-gold text-xl mb-3"></i>
+    <h2 class="font-serif text-xl">Subir foto</h2>
+    <p class="text-sm text-brand-muted mt-1">Agrega trabajo nuevo a la galería pública.</p>
+  </a>
+  <a href="{{ url_for('admin_reviews') }}" class="rounded-2xl border border-brand-border bg-white p-6 hover:border-brand-gold transition">
+    <i class="fa-solid fa-comments text-brand-gold text-xl mb-3"></i>
+    <h2 class="font-serif text-xl">Moderar comentarios</h2>
+    <p class="text-sm text-brand-muted mt-1">Aprueba o elimina opiniones de clientes.</p>
+  </a>
+  <a href="{{ url_for('admin_settings') }}" class="rounded-2xl border border-brand-border bg-white p-6 hover:border-brand-gold transition">
+    <i class="fa-solid fa-pen-to-square text-brand-gold text-xl mb-3"></i>
+    <h2 class="font-serif text-xl">Editar información</h2>
+    <p class="text-sm text-brand-muted mt-1">Textos del hero, sobre mí, WhatsApp y email.</p>
+  </a>
+  <a href="{{ url_for('admin_social') }}" class="rounded-2xl border border-brand-border bg-white p-6 hover:border-brand-gold transition">
+    <i class="fa-solid fa-share-nodes text-brand-gold text-xl mb-3"></i>
+    <h2 class="font-serif text-xl">Redes sociales</h2>
+    <p class="text-sm text-brand-muted mt-1">Instagram, Facebook, TikTok y más.</p>
+  </a>
+</div>
+{% endblock %}

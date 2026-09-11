@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if photo %}Editar foto{% else %}Nueva foto{% endif %}{% endblock %}
+{% block content %}
+<h1 class="font-serif text-4xl mb-6">{% if photo %}Editar foto{% else %}Nueva foto{% endif %}</h1>
+<form method="post" enctype="multipart/form-data" class="bg-brand-cream border border-brand-border rounded-2xl p-6 space-y-5 max-w-2xl">
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Título *</label>
+    <input name="title" required value="{{ photo.title if photo else '' }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Categoría</label>
+      <input name="category" value="{{ photo.category if photo else '' }}" placeholder="Retrato Editorial" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Lugar</label>
+      <input name="location" value="{{ photo.location if photo else '' }}" placeholder="Cartagena" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Descripción</label>
+    <textarea name="description" rows="3" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">{{ photo.description if photo else '' }}</textarea>
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Subir archivo</label>
+    <input type="file" name="image_file" accept="image/*" class="w-full text-sm">
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">O URL de imagen</label>
+    <input name="image_url" value="{{ photo.image_path if photo and (photo.image_path.startswith('http')) else '' }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white" placeholder="https://...">
+  </div>
+  {% if photo %}
+  <img src="{{ photo_src(photo.image_path) }}" alt="Vista previa" class="w-full max-h-64 object-cover rounded-xl">
+  {% endif %}
+  <div class="grid grid-cols-2 gap-4 items-center">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Orden</label>
+      <input type="number" name="sort_order" value="{{ photo.sort_order if photo else 0 }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+    <label class="flex items-center gap-2 mt-6 text-sm">
+      <input type="checkbox" name="is_published" value="1" {% if not photo or photo.is_published %}checked{% endif %}>
+      Visible en el sitio público
+    </label>
+  </div>
+  <div class="flex gap-3">
+    <button type="submit" class="rounded-full bg-brand-gold text-white px-8 py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">Guardar</button>
+    <a href="{{ url_for('admin_photos') }}" class="rounded-full border border-brand-border px-8 py-3 text-xs font-bold uppercase tracking-wider">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

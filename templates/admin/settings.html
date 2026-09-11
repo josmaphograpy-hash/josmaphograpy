@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block title %}Información{% endblock %}
+{% block content %}
+<h1 class="font-serif text-4xl mb-6">Información del sitio</h1>
+<form method="post" enctype="multipart/form-data" class="bg-brand-cream border border-brand-border rounded-2xl p-6 space-y-5">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Nombre de marca</label>
+      <input name="brand_name" value="{{ settings.brand_name }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Tagline</label>
+      <input name="tagline" value="{{ settings.tagline }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Título del hero</label>
+    <input name="hero_title" value="{{ settings.hero_title }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Subtítulo del hero</label>
+    <textarea name="hero_subtitle" rows="3" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">{{ settings.hero_subtitle }}</textarea>
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Título “Sobre mí”</label>
+    <input name="about_title" value="{{ settings.about_title }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Texto “Sobre mí”</label>
+    <textarea name="about_text" rows="4" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">{{ settings.about_text }}</textarea>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Ubicación</label>
+      <input name="location" value="{{ settings.location }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">WhatsApp (código país)</label>
+      <input name="whatsapp" value="{{ settings.whatsapp }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white" placeholder="57300...">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Email</label>
+      <input name="email" type="email" value="{{ settings.email }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Moneda</label>
+    <select name="currency" class="w-full max-w-xs rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+      {% for code in ['COP', 'USD', 'EUR', 'MXN'] %}
+      <option value="{{ code }}" {% if settings.currency == code %}selected{% endif %}>{{ code }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">Imagen hero (subir archivo)</label>
+      <input type="file" name="hero_image_file" accept="image/*" class="w-full text-sm">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold uppercase mb-2">O URL de imagen hero</label>
+      <input name="hero_image_url" value="{{ settings.hero_image }}" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+    </div>
+  </div>
+  <button type="submit" class="rounded-full bg-brand-gold text-white px-8 py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">
+    Guardar cambios
+  </button>
+</form>
+{% endblock %}

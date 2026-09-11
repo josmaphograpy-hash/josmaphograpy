@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% block title %}Redes sociales{% endblock %}
+{% block content %}
+<h1 class="font-serif text-4xl mb-6">Redes sociales</h1>
+
+<form method="post" class="bg-brand-cream border border-brand-border rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Plataforma</label>
+    <input name="platform" required placeholder="Instagram" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">URL</label>
+    <input name="url" required placeholder="https://instagram.com/..." class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+  </div>
+  <div>
+    <label class="block text-xs font-semibold uppercase mb-2">Icono Font Awesome</label>
+    <input name="icon" value="fa-brands fa-instagram" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+  </div>
+  <div class="flex items-end">
+    <button type="submit" class="w-full rounded-full bg-brand-gold text-white py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">Agregar</button>
+  </div>
+  <p class="md:col-span-4 text-xs text-brand-muted">Ejemplos de icono: <code>fa-brands fa-instagram</code>, <code>fa-brands fa-facebook-f</code>, <code>fa-brands fa-tiktok</code>, <code>fa-brands fa-youtube</code></p>
+</form>
+
+<div class="space-y-3">
+  {% for link in socials %}
+  <div class="bg-white border border-brand-border rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <i class="{{ link.icon }} text-brand-gold text-lg w-6 text-center"></i>
+      <div>
+        <p class="font-semibold text-sm">{{ link.platform }}</p>
+        <a href="{{ link.url }}" target="_blank" class="text-xs text-brand-muted hover:text-brand-gold break-all">{{ link.url }}</a>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <form method="post" action="{{ url_for('admin_social_toggle', link_id=link.id) }}">
+        <button class="rounded-full border border-brand-border px-4 py-2 text-xs uppercase font-semibold">
+          {% if link.is_active %}Ocultar{% else %}Mostrar{% endif %}
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('admin_social_delete', link_id=link.id) }}" onsubmit="return confirm('¿Eliminar?')">
+        <button class="rounded-full border border-red-200 text-red-700 px-4 py-2 text-xs uppercase font-semibold">Borrar</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="text-brand-muted">No hay redes configuradas.</p>
+  {% endfor %}
+</div>
+{% endblock %}

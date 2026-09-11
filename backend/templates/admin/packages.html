@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block title %}Planes{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="font-serif text-4xl">Planes / Colecciones</h1>
+    <p class="text-sm text-brand-muted mt-1">Edita precios, nombres e inclusiones de cada plan.</p>
+  </div>
+  <a href="{{ url_for('admin_package_new') }}" class="rounded-full bg-brand-gold text-white px-6 py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">+ Nuevo plan</a>
+</div>
+
+<div class="space-y-4">
+  {% for package in packages %}
+  <article class="bg-brand-cream border border-brand-border rounded-2xl p-5 flex flex-wrap justify-between gap-4">
+    <div>
+      <div class="flex flex-wrap items-center gap-2 mb-1">
+        <h2 class="font-serif text-2xl">{{ package.name }}</h2>
+        {% if package.is_featured %}<span class="text-[10px] uppercase bg-brand-gold text-white px-2 py-0.5 rounded-full">Destacado</span>{% endif %}
+        <span class="text-[10px] uppercase px-2 py-0.5 rounded-full {% if package.is_active %}bg-green-100 text-green-800{% else %}bg-stone-200 text-stone-600{% endif %}">
+          {% if package.is_active %}Activo{% else %}Oculto{% endif %}
+        </span>
+      </div>
+      <p class="text-xs text-brand-muted">{{ package.badge }} · {{ package.short_desc }}</p>
+      <p class="font-serif text-xl mt-2">$ {{ "{:,.0f}".format(package.price).replace(",", ".") }}</p>
+      <ul class="mt-2 text-xs text-brand-muted list-disc list-inside">
+        {% for item in package.features_list[:4] %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="flex gap-2 items-start">
+      <a href="{{ url_for('admin_package_edit', package_id=package.id) }}" class="rounded-full border border-brand-border px-4 py-2 text-xs font-semibold uppercase hover:border-brand-gold">Editar</a>
+      <form method="post" action="{{ url_for('admin_package_delete', package_id=package.id) }}" onsubmit="return confirm('¿Eliminar este plan?')">
+        <button class="rounded-full border border-red-200 text-red-700 px-4 py-2 text-xs font-semibold uppercase">Borrar</button>
+      </form>
+    </div>
+  </article>
+  {% else %}
+  <p class="text-brand-muted">No hay planes. Crea el primero.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+{% block title %}Fotos{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+  <h1 class="font-serif text-4xl">Galería</h1>
+  <a href="{{ url_for('admin_photo_new') }}" class="rounded-full bg-brand-gold text-white px-6 py-3 text-xs font-bold uppercase tracking-wider hover:bg-brand-bronze">
+    + Nueva foto
+  </a>
+</div>
+
+{% if photos %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  {% for photo in photos %}
+  <article class="bg-brand-cream border border-brand-border rounded-2xl overflow-hidden">
+    <img src="{{ photo_src(photo.image_path) }}" alt="{{ photo.title }}" class="w-full h-48 object-cover">
+    <div class="p-4">
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h2 class="font-serif text-xl">{{ photo.title }}</h2>
+          <p class="text-xs text-brand-muted">{{ photo.category }} · {{ photo.location }}</p>
+        </div>
+        <span class="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full {% if photo.is_published %}bg-green-100 text-green-800{% else %}bg-stone-200 text-stone-600{% endif %}">
+          {% if photo.is_published %}Publicada{% else %}Oculta{% endif %}
+        </span>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <a href="{{ url_for('admin_photo_edit', photo_id=photo.id) }}" class="flex-1 text-center rounded-full border border-brand-border py-2 text-xs font-semibold uppercase hover:border-brand-gold">Editar</a>
+        <form method="post" action="{{ url_for('admin_photo_delete', photo_id=photo.id) }}" onsubmit="return confirm('¿Eliminar esta foto?')">
+          <button type="submit" class="rounded-full border border-red-200 text-red-700 px-4 py-2 text-xs font-semibold uppercase hover:bg-red-50">Borrar</button>
+        </form>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-brand-muted">Aún no hay fotos. Sube la primera.</p>
+{% endif %}
+{% endblock %}

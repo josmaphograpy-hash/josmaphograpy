@@ -1,0 +1,26 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+josman.db
+
+# Uploads (se regeneran desde el panel)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Logs
+logs
+*.log
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Temp
+ref-source.html
+download_html.py
