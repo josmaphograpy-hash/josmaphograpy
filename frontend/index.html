@@ -186,16 +186,23 @@
     </section>
   </main>
 
-  <footer class="bg-brand-dark text-white py-16 px-6">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-      <div>
-        <div class="font-serif text-2xl uppercase" data-brand></div>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__brand">
+        <div class="font-serif text-2xl uppercase tracking-wide" data-brand></div>
         <p class="text-xs text-stone-400 mt-1" data-location></p>
       </div>
-      <div class="flex gap-6 text-brand-gold text-lg" data-socials></div>
-      <a data-whatsapp-link href="#" class="text-xs uppercase tracking-wider text-brand-goldlight">WhatsApp</a>
+      <div class="site-footer__socials" data-socials></div>
+      <a data-whatsapp-link href="#" class="site-footer__wa" aria-label="WhatsApp" target="_blank" rel="noopener">
+        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+        <span>WhatsApp</span>
+      </a>
     </div>
   </footer>
+
+  <a data-whatsapp-link href="#" class="wa-fab" aria-label="Escribir por WhatsApp" target="_blank" rel="noopener">
+    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+  </a>
 
   <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
     <button type="button" id="lightbox-close" class="lightbox__close" aria-label="Cerrar">&times;</button>

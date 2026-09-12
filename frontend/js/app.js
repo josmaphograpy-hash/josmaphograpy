@@ -194,17 +194,23 @@
     if (heroImg && s.hero_image) heroImg.src = s.hero_image;
 
     const wa = (s.whatsapp || "").replace(/\D/g, "");
+    const waUrl = wa
+      ? `https://wa.me/${wa}?text=${encodeURIComponent("Hola Josman, me gustaría cotizar una sesión.")}`
+      : "#";
     document.querySelectorAll("[data-whatsapp-link]").forEach((a) => {
-      a.href = wa ? `https://wa.me/${wa}` : "#";
+      a.href = waUrl;
+      if (!wa) a.setAttribute("aria-disabled", "true");
     });
+    const fab = document.querySelector(".wa-fab");
+    if (fab) fab.classList.toggle("is-visible", Boolean(wa));
 
-    // Social
+    // Social — iconos estables con área táctil fija
     const socialWrap = document.querySelector("[data-socials]");
     if (socialWrap) {
       socialWrap.innerHTML = (data.socials || [])
         .map(
           (x) =>
-            `<a href="${x.url}" target="_blank" rel="noopener" aria-label="${x.platform}" class="hover:text-white transition-colors"><i class="${x.icon}"></i></a>`
+            `<a href="${x.url}" target="_blank" rel="noopener" aria-label="${x.platform}" class="social-icon"><i class="${x.icon}" aria-hidden="true"></i></a>`
         )
         .join("");
     }
