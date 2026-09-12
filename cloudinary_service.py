@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 from pathlib import Path
 
@@ -32,8 +33,17 @@ def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def _is_production() -> bool:
+    """Render y similares no deben guardar en disco efímero."""
+    return bool(
+        os.environ.get("RENDER")
+        or os.environ.get("RENDER_SERVICE_ID")
+        or current_app.config.get("ENV") == "production"
+    )
+
+
 def save_upload(file_storage) -> str | None:
-    """Devuelve URL https (Cloudinary) o path relativo local."""
+    """Devuelve URL https (Cloudinary) o path relativo local (solo desarrollo)."""
     if not file_storage or not file_storage.filename:
         return None
     if not allowed_file(file_storage.filename):
@@ -50,6 +60,14 @@ def save_upload(file_storage) -> str | None:
             overwrite=False,
         )
         return result.get("secure_url") or result.get("url")
+
+    # En producción sin Cloudinary: no guardar en disco (se pierde al redeploy)
+    if _is_production():
+        current_app.logger.error(
+            "Cloudinary no configurado: define CLOUDINARY_CLOUD_NAME, "
+            "CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET en Render."
+        )
+        return None
 
     upload_dir = Path(current_app.root_path) / "static" / "uploads"
     upload_dir.mkdir(parents=True, exist_ok=True)

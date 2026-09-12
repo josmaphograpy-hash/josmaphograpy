@@ -492,7 +492,15 @@ def admin_photo_new():
             flash("El título es obligatorio.", "error")
             return redirect(url_for("admin_photo_new"))
 
-        image_path = save_upload(request.files.get("image_file"))
+        uploaded_file = request.files.get("image_file")
+        image_path = save_upload(uploaded_file) if uploaded_file and uploaded_file.filename else None
+        if uploaded_file and uploaded_file.filename and not image_path:
+            flash(
+                "No se pudo subir la imagen. Revisa Cloudinary en Render "
+                "(CLOUDINARY_CLOUD_NAME, API_KEY y API_SECRET).",
+                "error",
+            )
+            return redirect(url_for("admin_photo_new"))
         if not image_path:
             image_path = (request.form.get("image_url") or "").strip()
         if not image_path:
@@ -529,8 +537,16 @@ def admin_photo_edit(photo_id: int):
         photo.is_published = bool(request.form.get("is_published"))
         photo.sort_order = request.form.get("sort_order", type=int) or 0
 
-        uploaded = save_upload(request.files.get("image_file"))
-        if uploaded:
+        file_storage = request.files.get("image_file")
+        if file_storage and file_storage.filename:
+            uploaded = save_upload(file_storage)
+            if not uploaded:
+                flash(
+                    "No se pudo subir la imagen. Revisa Cloudinary en Render "
+                    "(CLOUDINARY_CLOUD_NAME, API_KEY y API_SECRET).",
+                    "error",
+                )
+                return redirect(url_for("admin_photo_edit", photo_id=photo.id))
             photo.image_path = uploaded
         else:
             image_url = (request.form.get("image_url") or "").strip()
