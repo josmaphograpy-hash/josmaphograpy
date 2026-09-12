@@ -47,7 +47,7 @@
       </a>
       <nav class="hidden md:flex items-center gap-8 text-xs tracking-widest uppercase">
         <a class="nav-link hover:text-brand-gold" href="#filosofia">Filosofía</a>
-        <a class="nav-link hover:text-brand-gold" href="#galeria">Galería</a>
+        <a class="nav-link hover:text-brand-gold" href="#galeria">Sesiones</a>
         <a class="nav-link hover:text-brand-gold" href="#colecciones">Colecciones</a>
         <a class="nav-link hover:text-brand-gold" href="#cotizador">Cotizar</a>
         <a class="nav-link hover:text-brand-gold" href="#opiniones">Opinar</a>
@@ -67,7 +67,7 @@
         <p class="hero-cinematic__lead" data-hero-subtitle></p>
         <div class="flex flex-wrap gap-3">
           <a href="#cotizador" class="gold-gradient-bg text-white px-8 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase">Diseñar Tu Cobertura</a>
-          <a href="#galeria" class="border border-white/35 text-white px-8 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase hover:bg-white hover:text-brand-dark transition">Ver Galería</a>
+          <a href="#galeria" class="border border-white/35 text-white px-8 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase hover:bg-white hover:text-brand-dark transition">Ver Sesiones</a>
         </div>
       </div>
     </section>
@@ -80,12 +80,38 @@
       </div>
     </section>
 
-    <section id="galeria" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
-      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-        <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">Galería</span>
-        <h2 class="font-serif text-4xl sm:text-5xl mt-3">Instantes de Luz</h2>
+    <section id="galeria" class="sessions-gallery py-24 lg:py-32">
+      <div class="max-w-7xl mx-auto px-6 lg:px-12">
+        <div class="sessions-gallery__intro reveal">
+          <span class="text-xs uppercase tracking-[0.28em] text-brand-gold">Portafolio</span>
+          <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl mt-3">Sesiones con intención</h2>
+          <p class="sessions-gallery__lead">
+            Personas, quinceañeros y empresas: tres lenguajes, una misma mirada editorial.
+            Versatilidad con criterio — para clientes que buscan confianza y estilo.
+          </p>
+        </div>
+
+        <div class="session-tabs" role="tablist" aria-label="Tipos de sesión" data-session-tabs>
+          <button type="button" class="session-tab is-active" role="tab" aria-selected="true" data-session="all">Todas</button>
+          <button type="button" class="session-tab" role="tab" aria-selected="false" data-session="personas">Personas</button>
+          <button type="button" class="session-tab" role="tab" aria-selected="false" data-session="quince">Quinceañeros</button>
+          <button type="button" class="session-tab" role="tab" aria-selected="false" data-session="empresas">Empresas</button>
+          <button type="button" class="session-tab" role="tab" aria-selected="false" data-session="bodas">Bodas</button>
+        </div>
+
+        <div class="session-panel reveal" data-session-panel>
+          <p class="session-panel__eyebrow" data-session-eyebrow>Colección completa</p>
+          <h3 class="session-panel__title" data-session-title>Historia visual en todas las facetas</h3>
+          <p class="session-panel__text" data-session-text>
+            Un recorrido por el trabajo editorial: retratos, celebraciones y proyectos de marca con la misma sensibilidad fine art.
+          </p>
+        </div>
+
+        <div class="gallery-masonry" data-gallery></div>
+        <p class="sessions-gallery__empty hidden" data-gallery-empty>
+          Pronto nuevas piezas en esta sesión. Mientras tanto, explora otra categoría o escríbenos para agendar.
+        </p>
       </div>
-      <div class="gallery-masonry" data-gallery></div>
     </section>
 
     <section id="colecciones" class="py-24 bg-brand-sand border-y border-brand-border/60">

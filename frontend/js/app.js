@@ -24,6 +24,117 @@
     return res.json();
   }
 
+  const SESSION_COPY = {
+    all: {
+      eyebrow: "Colección completa",
+      title: "Historia visual en todas las facetas",
+      text: "Un recorrido por el trabajo editorial: retratos, celebraciones y proyectos de marca con la misma sensibilidad fine art.",
+    },
+    personas: {
+      eyebrow: "Sesión Personas",
+      title: "Retratos con carácter y naturalidad",
+      text: "Individuales, parejas y familia: presencia auténtica, luz cuidada y una dirección suave que transmite confianza.",
+    },
+    quince: {
+      eyebrow: "Sesión Quinceañeros",
+      title: "La celebración de una etapa",
+      text: "Elegancia juvenil y emoción real: una narrativa visual que honra el momento sin excesos, con estilo editorial.",
+    },
+    empresas: {
+      eyebrow: "Sesión Empresas",
+      title: "Imagen corporativa con sensibilidad",
+      text: "Marca, equipo y eventos: fotografía profesional que proyecta seriedad, calidez y versatilidad ante tus clientes.",
+    },
+    bodas: {
+      eyebrow: "Sesión Bodas",
+      title: "La poesía del día más importante",
+      text: "Documental fine art: gestos íntimos, luz natural y una mirada que preserva la verdad emocional de la celebración.",
+    },
+  };
+
+  function normalizeSession(category) {
+    const c = (category || "").toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+    if (/quince|xv\b|15\s*anos|sweet\s*sixteen/.test(c)) return "quince";
+    if (/empresa|corporativ|comercial|branding|negocios|headshot|equipo/.test(c)) return "empresas";
+    if (/persona|retrato|portrait|familia|individual|lifestyle|personal/.test(c)) return "personas";
+    if (/boda|wedding|matrimonio|pre.?boda|save.?the.?date|ceremonia|recepcion|novia/.test(c)) return "bodas";
+    return "other";
+  }
+
+  function escapeAttr(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function setupSessionsGallery(photos) {
+    const gallery = document.querySelector("[data-gallery]");
+    const empty = document.querySelector("[data-gallery-empty]");
+    const tabs = document.querySelectorAll("[data-session-tabs] [data-session]");
+    const panel = document.querySelector("[data-session-panel]");
+    if (!gallery) return;
+
+    const items = (photos || []).map((p) => ({
+      ...p,
+      session: normalizeSession(p.category),
+    }));
+
+    const paint = (sessionKey) => {
+      const copy = SESSION_COPY[sessionKey] || SESSION_COPY.all;
+      const eyebrow = document.querySelector("[data-session-eyebrow]");
+      const title = document.querySelector("[data-session-title]");
+      const text = document.querySelector("[data-session-text]");
+      if (eyebrow) eyebrow.textContent = copy.eyebrow;
+      if (title) title.textContent = copy.title;
+      if (text) text.textContent = copy.text;
+
+      const filtered =
+        sessionKey === "all" ? items : items.filter((p) => p.session === sessionKey);
+
+      gallery.classList.add("is-switching");
+      panel?.classList.add("is-switching");
+
+      window.setTimeout(() => {
+        gallery.innerHTML = filtered
+          .map(
+            (p) => `
+          <figure class="gallery-item reveal" tabindex="0" role="button"
+            data-lightbox data-full="${escapeAttr(p.image_url)}" data-title="${escapeAttr(p.title)}"
+            data-category="${escapeAttr(p.category || "")}" data-location="${escapeAttr(p.location || "")}">
+            <img src="${escapeAttr(p.image_url)}" alt="${escapeAttr(p.title)}" loading="lazy">
+            <figcaption class="gallery-item__meta">
+              ${p.category ? `<span class="text-[10px] uppercase tracking-widest text-brand-goldlight">${escapeAttr(p.category)}</span>` : ""}
+              <h3 class="font-serif text-xl mt-1">${escapeAttr(p.title)}</h3>
+              ${p.location ? `<p class="text-xs text-stone-300 mt-1">${escapeAttr(p.location)}</p>` : ""}
+            </figcaption>
+          </figure>`
+          )
+          .join("");
+
+        if (empty) empty.classList.toggle("hidden", filtered.length > 0);
+        gallery.classList.remove("is-switching");
+        panel?.classList.remove("is-switching");
+        document.dispatchEvent(new CustomEvent("content:ready"));
+      }, 180);
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const key = tab.getAttribute("data-session") || "all";
+        tabs.forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle("is-active", on);
+          t.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        paint(key);
+      });
+    });
+
+    paint("all");
+  }
+
   function render(data) {
     const s = data.settings || {};
     const currency = s.currency || "COP";
@@ -71,25 +182,8 @@
         .join("");
     }
 
-    // Gallery
-    const gallery = document.querySelector("[data-gallery]");
-    if (gallery) {
-      gallery.innerHTML = (data.photos || [])
-        .map(
-          (p, i) => `
-        <figure class="gallery-item reveal" tabindex="0" role="button"
-          data-lightbox data-full="${p.image_url}" data-title="${p.title}"
-          data-category="${p.category || ""}" data-location="${p.location || ""}">
-          <img src="${p.image_url}" alt="${p.title}" loading="lazy">
-          <figcaption class="gallery-item__meta">
-            ${p.category ? `<span class="text-[10px] uppercase tracking-widest text-brand-goldlight">${p.category}</span>` : ""}
-            <h3 class="font-serif text-xl mt-1">${p.title}</h3>
-            ${p.location ? `<p class="text-xs text-stone-300 mt-1">${p.location}</p>` : ""}
-          </figcaption>
-        </figure>`
-        )
-        .join("") || `<p class="text-center text-brand-muted">Pronto nuevas piezas editoriales.</p>`;
-    }
+    // Gallery — sesiones filtrables
+    setupSessionsGallery(data.photos || []);
 
     // Packages
     const pkgs = document.querySelector("[data-packages]");

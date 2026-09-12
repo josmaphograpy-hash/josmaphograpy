@@ -9,8 +9,15 @@
   </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label class="block text-xs font-semibold uppercase mb-2">Categoría</label>
-      <input name="category" value="{{ photo.category if photo else '' }}" placeholder="Retrato Editorial" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+      <label class="block text-xs font-semibold uppercase mb-2">Sesión / Categoría</label>
+      <input name="category" list="session-categories" value="{{ photo.category if photo else '' }}" placeholder="Personas · Quinceañeros · Empresas · Bodas" class="w-full rounded-xl border border-brand-border px-4 py-3 text-sm bg-white">
+      <datalist id="session-categories">
+        <option value="Personas"></option>
+        <option value="Quinceañeros"></option>
+        <option value="Empresas"></option>
+        <option value="Bodas"></option>
+      </datalist>
+      <p class="text-[11px] text-brand-muted mt-1">Usa exactamente una de esas palabras para que filtre bien en el sitio.</p>
     </div>
     <div>
       <label class="block text-xs font-semibold uppercase mb-2">Lugar</label>
