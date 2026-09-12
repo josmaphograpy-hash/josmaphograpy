@@ -487,39 +487,53 @@ def admin_photos():
 @admin_required
 def admin_photo_new():
     if request.method == "POST":
-        title = (request.form.get("title") or "").strip()
-        if not title:
-            flash("El título es obligatorio.", "error")
-            return redirect(url_for("admin_photo_new"))
+        try:
+            title = (request.form.get("title") or "").strip()
+            if not title:
+                flash("El título es obligatorio.", "error")
+                return redirect(url_for("admin_photo_new"))
 
-        uploaded_file = request.files.get("image_file")
-        image_path = save_upload(uploaded_file) if uploaded_file and uploaded_file.filename else None
-        if uploaded_file and uploaded_file.filename and not image_path:
+            uploaded_file = request.files.get("image_file")
+            image_path = (
+                save_upload(uploaded_file)
+                if uploaded_file and uploaded_file.filename
+                else None
+            )
+            if uploaded_file and uploaded_file.filename and not image_path:
+                flash(
+                    "No se pudo subir la imagen. Verifica en Render: "
+                    "CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET "
+                    "(sin espacios). Formatos: JPG, PNG, WEBP o GIF.",
+                    "error",
+                )
+                return redirect(url_for("admin_photo_new"))
+            if not image_path:
+                image_path = (request.form.get("image_url") or "").strip()
+            if not image_path:
+                flash("Sube una imagen o pega una URL.", "error")
+                return redirect(url_for("admin_photo_new"))
+
+            photo = Photo(
+                title=title,
+                category=(request.form.get("category") or "").strip(),
+                location=(request.form.get("location") or "").strip(),
+                description=(request.form.get("description") or "").strip(),
+                image_path=image_path,
+                is_published=bool(request.form.get("is_published")),
+                sort_order=request.form.get("sort_order", type=int) or 0,
+            )
+            db.session.add(photo)
+            db.session.commit()
+            flash("Foto agregada a la galería.", "success")
+            return redirect(url_for("admin_photos"))
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Error al crear foto")
             flash(
-                "No se pudo subir la imagen. Revisa Cloudinary en Render "
-                "(CLOUDINARY_CLOUD_NAME, API_KEY y API_SECRET).",
+                "Error al guardar la foto. Revisa Cloudinary y los logs de Render.",
                 "error",
             )
             return redirect(url_for("admin_photo_new"))
-        if not image_path:
-            image_path = (request.form.get("image_url") or "").strip()
-        if not image_path:
-            flash("Sube una imagen o pega una URL.", "error")
-            return redirect(url_for("admin_photo_new"))
-
-        photo = Photo(
-            title=title,
-            category=(request.form.get("category") or "").strip(),
-            location=(request.form.get("location") or "").strip(),
-            description=(request.form.get("description") or "").strip(),
-            image_path=image_path,
-            is_published=bool(request.form.get("is_published")),
-            sort_order=request.form.get("sort_order", type=int) or 0,
-        )
-        db.session.add(photo)
-        db.session.commit()
-        flash("Foto agregada a la galería.", "success")
-        return redirect(url_for("admin_photos"))
 
     return render_template("admin/photo_form.html", photo=None)
 
@@ -530,32 +544,42 @@ def admin_photo_edit(photo_id: int):
     photo = db.session.get(Photo, photo_id) or abort(404)
 
     if request.method == "POST":
-        photo.title = (request.form.get("title") or photo.title).strip()
-        photo.category = (request.form.get("category") or "").strip()
-        photo.location = (request.form.get("location") or "").strip()
-        photo.description = (request.form.get("description") or "").strip()
-        photo.is_published = bool(request.form.get("is_published"))
-        photo.sort_order = request.form.get("sort_order", type=int) or 0
+        try:
+            photo.title = (request.form.get("title") or photo.title).strip()
+            photo.category = (request.form.get("category") or "").strip()
+            photo.location = (request.form.get("location") or "").strip()
+            photo.description = (request.form.get("description") or "").strip()
+            photo.is_published = bool(request.form.get("is_published"))
+            photo.sort_order = request.form.get("sort_order", type=int) or 0
 
-        file_storage = request.files.get("image_file")
-        if file_storage and file_storage.filename:
-            uploaded = save_upload(file_storage)
-            if not uploaded:
-                flash(
-                    "No se pudo subir la imagen. Revisa Cloudinary en Render "
-                    "(CLOUDINARY_CLOUD_NAME, API_KEY y API_SECRET).",
-                    "error",
-                )
-                return redirect(url_for("admin_photo_edit", photo_id=photo.id))
-            photo.image_path = uploaded
-        else:
-            image_url = (request.form.get("image_url") or "").strip()
-            if image_url:
-                photo.image_path = image_url
+            file_storage = request.files.get("image_file")
+            if file_storage and file_storage.filename:
+                uploaded = save_upload(file_storage)
+                if not uploaded:
+                    flash(
+                        "No se pudo subir la imagen. Verifica en Render: "
+                        "CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y "
+                        "CLOUDINARY_API_SECRET (sin espacios).",
+                        "error",
+                    )
+                    return redirect(url_for("admin_photo_edit", photo_id=photo.id))
+                photo.image_path = uploaded
+            else:
+                image_url = (request.form.get("image_url") or "").strip()
+                if image_url:
+                    photo.image_path = image_url
 
-        db.session.commit()
-        flash("Foto actualizada.", "success")
-        return redirect(url_for("admin_photos"))
+            db.session.commit()
+            flash("Foto actualizada.", "success")
+            return redirect(url_for("admin_photos"))
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Error al editar foto %s", photo_id)
+            flash(
+                "Error al guardar la foto. Revisa Cloudinary y los logs de Render.",
+                "error",
+            )
+            return redirect(url_for("admin_photo_edit", photo_id=photo.id))
 
     return render_template("admin/photo_form.html", photo=photo)
 

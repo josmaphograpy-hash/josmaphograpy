@@ -1,4 +1,4 @@
-"""Subida de imágenes a Cloudinary (fallback local en desarrollo)."""
+"""Subida de imágenes a Cloudinary (fallback local solo en desarrollo)."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 
 import cloudinary
 import cloudinary.uploader
+from cloudinary.exceptions import Error as CloudinaryError
 from flask import current_app, url_for
 from werkzeug.utils import secure_filename
 
@@ -15,9 +16,9 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
 
 def configure_cloudinary() -> bool:
-    name = current_app.config.get("CLOUDINARY_CLOUD_NAME")
-    key = current_app.config.get("CLOUDINARY_API_KEY")
-    secret = current_app.config.get("CLOUDINARY_API_SECRET")
+    name = (current_app.config.get("CLOUDINARY_CLOUD_NAME") or "").strip()
+    key = (current_app.config.get("CLOUDINARY_API_KEY") or "").strip()
+    secret = (current_app.config.get("CLOUDINARY_API_SECRET") or "").strip()
     if not (name and key and secret):
         return False
     cloudinary.config(
@@ -47,21 +48,37 @@ def save_upload(file_storage) -> str | None:
     if not file_storage or not file_storage.filename:
         return None
     if not allowed_file(file_storage.filename):
+        current_app.logger.warning("Extensión no permitida: %s", file_storage.filename)
         return None
 
     if configure_cloudinary():
-        folder = current_app.config.get("CLOUDINARY_FOLDER", "josman")
-        result = cloudinary.uploader.upload(
-            file_storage,
-            folder=folder,
-            resource_type="image",
-            use_filename=True,
-            unique_filename=True,
-            overwrite=False,
-        )
-        return result.get("secure_url") or result.get("url")
+        folder = (current_app.config.get("CLOUDINARY_FOLDER") or "josman").strip()
+        try:
+            # Asegura lectura desde el inicio del archivo
+            try:
+                file_storage.stream.seek(0)
+            except Exception:
+                pass
+            result = cloudinary.uploader.upload(
+                file_storage,
+                folder=folder or "josman",
+                resource_type="image",
+                use_filename=True,
+                unique_filename=True,
+                overwrite=False,
+            )
+            url = result.get("secure_url") or result.get("url")
+            if not url:
+                current_app.logger.error("Cloudinary respondió sin URL: %s", result)
+                return None
+            return url
+        except CloudinaryError as exc:
+            current_app.logger.exception("Error Cloudinary: %s", exc)
+            return None
+        except Exception as exc:
+            current_app.logger.exception("Fallo inesperado subiendo a Cloudinary: %s", exc)
+            return None
 
-    # En producción sin Cloudinary: no guardar en disco (se pierde al redeploy)
     if _is_production():
         current_app.logger.error(
             "Cloudinary no configurado: define CLOUDINARY_CLOUD_NAME, "

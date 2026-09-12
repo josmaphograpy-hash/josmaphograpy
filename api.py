@@ -28,7 +28,18 @@ def _settings_payload(settings: SiteSettings) -> dict:
 
 @api_bp.get("/health")
 def health():
-    return jsonify({"ok": True, "service": "josmaphograpy-api"})
+    cloudinary_ready = bool(
+        (current_app.config.get("CLOUDINARY_CLOUD_NAME") or "").strip()
+        and (current_app.config.get("CLOUDINARY_API_KEY") or "").strip()
+        and (current_app.config.get("CLOUDINARY_API_SECRET") or "").strip()
+    )
+    return jsonify(
+        {
+            "ok": True,
+            "service": "josmaphograpy-api",
+            "cloudinary": cloudinary_ready,
+        }
+    )
 
 
 @api_bp.get("/public")
