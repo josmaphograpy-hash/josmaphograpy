@@ -26,7 +26,7 @@ from flask_login import (
 )
 
 from api import api_bp
-from cloudinary_service import public_image_url, save_upload
+from cloudinary_service import UploadError, cloudinary_status, public_image_url, save_upload
 from config import Config
 from models import (
     Admin,
@@ -461,13 +461,17 @@ def admin_settings():
         settings.email = request.form.get("email", settings.email).strip()
         settings.currency = request.form.get("currency", settings.currency or "COP").strip()
 
-        uploaded = save_upload(request.files.get("hero_image_file"))
-        if uploaded:
-            settings.hero_image = uploaded
-        else:
-            hero_url = (request.form.get("hero_image_url") or "").strip()
-            if hero_url:
-                settings.hero_image = hero_url
+        try:
+            uploaded = save_upload(request.files.get("hero_image_file"))
+            if uploaded:
+                settings.hero_image = uploaded
+            else:
+                hero_url = (request.form.get("hero_image_url") or "").strip()
+                if hero_url:
+                    settings.hero_image = hero_url
+        except UploadError as exc:
+            flash(str(exc), "error")
+            return redirect(url_for("admin_settings"))
 
         db.session.commit()
         flash("Información del sitio actualizada.", "success")
@@ -494,19 +498,13 @@ def admin_photo_new():
                 return redirect(url_for("admin_photo_new"))
 
             uploaded_file = request.files.get("image_file")
-            image_path = (
-                save_upload(uploaded_file)
-                if uploaded_file and uploaded_file.filename
-                else None
-            )
-            if uploaded_file and uploaded_file.filename and not image_path:
-                flash(
-                    "No se pudo subir la imagen. Verifica en Render: "
-                    "CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET "
-                    "(sin espacios). Formatos: JPG, PNG, WEBP o GIF.",
-                    "error",
-                )
-                return redirect(url_for("admin_photo_new"))
+            image_path = None
+            if uploaded_file and uploaded_file.filename:
+                try:
+                    image_path = save_upload(uploaded_file)
+                except UploadError as exc:
+                    flash(str(exc), "error")
+                    return redirect(url_for("admin_photo_new"))
             if not image_path:
                 image_path = (request.form.get("image_url") or "").strip()
             if not image_path:
@@ -554,14 +552,10 @@ def admin_photo_edit(photo_id: int):
 
             file_storage = request.files.get("image_file")
             if file_storage and file_storage.filename:
-                uploaded = save_upload(file_storage)
-                if not uploaded:
-                    flash(
-                        "No se pudo subir la imagen. Verifica en Render: "
-                        "CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y "
-                        "CLOUDINARY_API_SECRET (sin espacios).",
-                        "error",
-                    )
+                try:
+                    uploaded = save_upload(file_storage)
+                except UploadError as exc:
+                    flash(str(exc), "error")
                     return redirect(url_for("admin_photo_edit", photo_id=photo.id))
                 photo.image_path = uploaded
             else:

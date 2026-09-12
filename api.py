@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flask import Blueprint, current_app, jsonify, request
 
-from cloudinary_service import public_image_url
+from cloudinary_service import cloudinary_status, public_image_url
 from models import Package, Photo, Review, ServiceAddon, SiteSettings, SocialLink, db
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -28,16 +28,13 @@ def _settings_payload(settings: SiteSettings) -> dict:
 
 @api_bp.get("/health")
 def health():
-    cloudinary_ready = bool(
-        (current_app.config.get("CLOUDINARY_CLOUD_NAME") or "").strip()
-        and (current_app.config.get("CLOUDINARY_API_KEY") or "").strip()
-        and (current_app.config.get("CLOUDINARY_API_SECRET") or "").strip()
-    )
+    status = cloudinary_status()
     return jsonify(
         {
             "ok": True,
             "service": "josmaphograpy-api",
-            "cloudinary": cloudinary_ready,
+            "cloudinary": status.get("ok", False),
+            "cloudinary_detail": status,
         }
     )
 
