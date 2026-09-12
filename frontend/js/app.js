@@ -74,15 +74,39 @@
     const empty = document.querySelector("[data-gallery-empty]");
     const tabs = document.querySelectorAll("[data-session-tabs] [data-session]");
     const panel = document.querySelector("[data-session-panel]");
+    const moreWrap = document.querySelector("[data-gallery-more-wrap]");
+    const moreBtn = document.querySelector("[data-gallery-more]");
+    const moreLabel = document.querySelector("[data-gallery-more-label]");
     if (!gallery) return;
+
+    const PAGE_SIZE = 6;
+    let currentSession = "all";
+    let visibleCount = PAGE_SIZE;
 
     const items = (photos || []).map((p) => ({
       ...p,
       session: normalizeSession(p.category),
     }));
 
-    const paint = (sessionKey) => {
-      const copy = SESSION_COPY[sessionKey] || SESSION_COPY.all;
+    const filteredItems = () =>
+      currentSession === "all"
+        ? items
+        : items.filter((p) => p.session === currentSession);
+
+    const cardHtml = (p) => `
+      <figure class="gallery-item reveal" tabindex="0" role="button"
+        data-lightbox data-full="${escapeAttr(p.image_url)}" data-title="${escapeAttr(p.title)}"
+        data-category="${escapeAttr(p.category || "")}" data-location="${escapeAttr(p.location || "")}">
+        <img src="${escapeAttr(p.image_url)}" alt="${escapeAttr(p.title)}" loading="lazy">
+        <figcaption class="gallery-item__meta">
+          ${p.category ? `<span class="text-[10px] uppercase tracking-widest text-brand-goldlight">${escapeAttr(p.category)}</span>` : ""}
+          <h3 class="font-serif text-xl mt-1">${escapeAttr(p.title)}</h3>
+          ${p.location ? `<p class="text-xs text-stone-300 mt-1">${escapeAttr(p.location)}</p>` : ""}
+        </figcaption>
+      </figure>`;
+
+    const paint = ({ resetVisible = false } = {}) => {
+      const copy = SESSION_COPY[currentSession] || SESSION_COPY.all;
       const eyebrow = document.querySelector("[data-session-eyebrow]");
       const title = document.querySelector("[data-session-title]");
       const text = document.querySelector("[data-session-text]");
@@ -90,30 +114,28 @@
       if (title) title.textContent = copy.title;
       if (text) text.textContent = copy.text;
 
-      const filtered =
-        sessionKey === "all" ? items : items.filter((p) => p.session === sessionKey);
+      if (resetVisible) visibleCount = PAGE_SIZE;
+
+      const filtered = filteredItems();
+      const shown = filtered.slice(0, visibleCount);
+      const remaining = Math.max(0, filtered.length - shown.length);
 
       gallery.classList.add("is-switching");
       panel?.classList.add("is-switching");
 
       window.setTimeout(() => {
-        gallery.innerHTML = filtered
-          .map(
-            (p) => `
-          <figure class="gallery-item reveal" tabindex="0" role="button"
-            data-lightbox data-full="${escapeAttr(p.image_url)}" data-title="${escapeAttr(p.title)}"
-            data-category="${escapeAttr(p.category || "")}" data-location="${escapeAttr(p.location || "")}">
-            <img src="${escapeAttr(p.image_url)}" alt="${escapeAttr(p.title)}" loading="lazy">
-            <figcaption class="gallery-item__meta">
-              ${p.category ? `<span class="text-[10px] uppercase tracking-widest text-brand-goldlight">${escapeAttr(p.category)}</span>` : ""}
-              <h3 class="font-serif text-xl mt-1">${escapeAttr(p.title)}</h3>
-              ${p.location ? `<p class="text-xs text-stone-300 mt-1">${escapeAttr(p.location)}</p>` : ""}
-            </figcaption>
-          </figure>`
-          )
-          .join("");
+        gallery.innerHTML = shown.map(cardHtml).join("");
 
         if (empty) empty.classList.toggle("hidden", filtered.length > 0);
+        if (moreWrap) {
+          if (remaining > 0) {
+            moreWrap.hidden = false;
+            if (moreLabel) moreLabel.textContent = `Ver ${Math.min(PAGE_SIZE, remaining)} más`;
+          } else {
+            moreWrap.hidden = true;
+          }
+        }
+
         gallery.classList.remove("is-switching");
         panel?.classList.remove("is-switching");
         document.dispatchEvent(new CustomEvent("content:ready"));
@@ -122,17 +144,22 @@
 
     tabs.forEach((tab) => {
       tab.addEventListener("click", () => {
-        const key = tab.getAttribute("data-session") || "all";
+        currentSession = tab.getAttribute("data-session") || "all";
         tabs.forEach((t) => {
           const on = t === tab;
           t.classList.toggle("is-active", on);
           t.setAttribute("aria-selected", on ? "true" : "false");
         });
-        paint(key);
+        paint({ resetVisible: true });
       });
     });
 
-    paint("all");
+    moreBtn?.addEventListener("click", () => {
+      visibleCount += PAGE_SIZE;
+      paint();
+    });
+
+    paint({ resetVisible: true });
   }
 
   function render(data) {

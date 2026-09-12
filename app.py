@@ -494,41 +494,63 @@ def admin_photo_new():
         try:
             title = (request.form.get("title") or "").strip()
             if not title:
-                flash("El título es obligatorio.", "error")
+                flash("El nombre del evento / etiqueta es obligatorio.", "error")
                 return redirect(url_for("admin_photo_new"))
 
-            uploaded_file = request.files.get("image_file")
-            image_path = None
-            if uploaded_file and uploaded_file.filename:
+            category = (request.form.get("category") or "").strip()
+            location = (request.form.get("location") or "").strip()
+            description = (request.form.get("description") or "").strip()
+            is_published = bool(request.form.get("is_published"))
+            sort_order = request.form.get("sort_order", type=int) or 0
+
+            files = [f for f in request.files.getlist("image_files") if f and f.filename]
+            if not files:
+                flash("Selecciona al menos una foto.", "error")
+                return redirect(url_for("admin_photo_new"))
+
+            saved = 0
+            errors = []
+            for index, file_storage in enumerate(files):
                 try:
-                    image_path = save_upload(uploaded_file)
+                    image_path = save_upload(file_storage)
                 except UploadError as exc:
-                    flash(str(exc), "error")
-                    return redirect(url_for("admin_photo_new"))
-            if not image_path:
-                image_path = (request.form.get("image_url") or "").strip()
-            if not image_path:
-                flash("Sube una imagen o pega una URL.", "error")
-                return redirect(url_for("admin_photo_new"))
+                    errors.append(f"{file_storage.filename}: {exc}")
+                    continue
+                if not image_path:
+                    errors.append(f"{file_storage.filename}: no se pudo subir")
+                    continue
+                db.session.add(
+                    Photo(
+                        title=title,
+                        category=category,
+                        location=location,
+                        description=description,
+                        image_path=image_path,
+                        is_published=is_published,
+                        sort_order=sort_order + index,
+                    )
+                )
+                saved += 1
 
-            photo = Photo(
-                title=title,
-                category=(request.form.get("category") or "").strip(),
-                location=(request.form.get("location") or "").strip(),
-                description=(request.form.get("description") or "").strip(),
-                image_path=image_path,
-                is_published=bool(request.form.get("is_published")),
-                sort_order=request.form.get("sort_order", type=int) or 0,
-            )
-            db.session.add(photo)
-            db.session.commit()
-            flash("Foto agregada a la galería.", "success")
+            if saved:
+                db.session.commit()
+                flash(
+                    f"Se subieron {saved} foto(s) al evento «{title}».",
+                    "success",
+                )
+            else:
+                db.session.rollback()
+                flash("No se pudo subir ninguna foto.", "error")
+
+            for err in errors[:5]:
+                flash(err, "error")
+
             return redirect(url_for("admin_photos"))
         except Exception:
             db.session.rollback()
-            app.logger.exception("Error al crear foto")
+            app.logger.exception("Error al crear fotos en lote")
             flash(
-                "Error al guardar la foto. Revisa Cloudinary y los logs de Render.",
+                "Error al guardar las fotos. Revisa Cloudinary y los logs de Render.",
                 "error",
             )
             return redirect(url_for("admin_photo_new"))

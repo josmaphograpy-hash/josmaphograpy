@@ -56,7 +56,7 @@ class Config:
     ):
         SQLALCHEMY_ENGINE_OPTIONS["connect_args"] = {"ssl": {"ssl": True}}
 
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 64 * 1024 * 1024  # lotes de varias fotos
 
     FRONTEND_URL = (os.environ.get("FRONTEND_URL") or "http://127.0.0.1:5500").rstrip("/")
     _cors_raw = [
