@@ -8,7 +8,6 @@ from pathlib import Path
 
 import cloudinary
 import cloudinary.uploader
-from cloudinary.exceptions import Error as CloudinaryError
 from flask import current_app, url_for
 from werkzeug.utils import secure_filename
 
@@ -72,11 +71,8 @@ def save_upload(file_storage) -> str | None:
                 current_app.logger.error("Cloudinary respondió sin URL: %s", result)
                 return None
             return url
-        except CloudinaryError as exc:
-            current_app.logger.exception("Error Cloudinary: %s", exc)
-            return None
         except Exception as exc:
-            current_app.logger.exception("Fallo inesperado subiendo a Cloudinary: %s", exc)
+            current_app.logger.exception("Fallo subiendo a Cloudinary: %s", exc)
             return None
 
     if _is_production():
